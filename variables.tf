@@ -57,7 +57,7 @@ variable "port_channel_appliances" {
     * mode - Port mode to be set on the appliance Port-Channel.
       - access - Access Mode Switch Port Type.
       - trunk: (default) - Trunk Mode Switch Port Type.
-    * pc_id: (required) - Port-Channel Identifier to Assign to the Port-Channel.
+    * pc_id: (required) - Number between 1-256.  Port-Channel Identifier to Assign to the Port-Channel.
     * priority: (optional) - The 'name' of the System QoS Class.
       - Best Effort: (default) - QoS Priority for Best-effort traffic.
       - Bronze - QoS Priority for Bronze traffic.
@@ -105,7 +105,7 @@ variable "port_channel_ethernet_uplinks" {
       - slot_id: (default is 1) - Slot Identifier of the Switch/FEX/Chassis Interface.
     * link_aggregation_policy: (optional) - Name of the Link Aggregation policy.
     * link_control_policy: (optional) - Name of the Link Control policy.
-    * pc_id: (required) - Port-Channel Identifier to Assign to the Port-Channel.
+    * pc_id: (required) - Number between 1-256.  Port-Channel Identifier to Assign to the Port-Channel.
     * tags: (optional) - List of Key/Value Pairs to Assign as Attributes to the Policy.
   EOT
   type = list(object(
@@ -143,7 +143,7 @@ variable "port_channel_fc_uplinks" {
       - breakout_port_id: (default is 0) - Breakout port Identifier of the Switch Interface.  When a port is not configured as a breakout port, the aggregatePortId is set to 0, and unused.  When a port is configured as a breakout port, the 'aggregatePortId' port number as labeled on the equipment, e.g. the id of the port on the switch.
       - port_id: (required) - Port ID to Assign to the LAN Port-Channel Policy.
       - slot_id: (default is 1) - Slot Identifier of the Switch/FEX/Chassis Interface.
-    * pc_id: (required) - Port-Channel Identifier to Assign to the Port-Channel.
+    * pc_id: (required) - Number between 1-256.  Port-Channel Identifier to Assign to the Port-Channel.
     * tags: (optional) - List of Key/Value Pairs to Assign as Attributes to the Policy.
     * vsan_id: (required) - VSAN to Assign to the Fibre-Channel Uplink.
   EOT
@@ -181,7 +181,7 @@ variable "port_channel_fcoe_uplinks" {
       - slot_id: (default is 1) - Slot Identifier of the Switch/FEX/Chassis Interface.
     * link_aggregation_policy: (optional) - Name of the Link Aggregation policy.
     * link_control_policy: (optional) - Name of the Link Control policy.
-    * pc_id: (required) - Port-Channel Identifier to Assign to the Port-Channel.
+    * pc_id: (required) - Number between 1-256.  Port-Channel Identifier to Assign to the Port-Channel.
     * tags: (optional) - List of Key/Value Pairs to Assign as Attributes to the Policy.
   EOT
   type = list(object(
