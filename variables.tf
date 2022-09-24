@@ -1,7 +1,3 @@
-terraform {
-  experiments = [module_variable_optional_attrs]
-}
-
 #____________________________________________________________
 #
 # UCS Domain Port Policy Variables Section.
@@ -69,20 +65,20 @@ variable "port_channel_appliances" {
   EOT
   type = list(object(
     {
-      admin_speed                     = optional(string)
+      admin_speed                     = optional(string, "Auto")
       ethernet_network_control_policy = string
       ethernet_network_group_policy   = string
       interfaces = optional(list(object(
         {
-          breakout_port_id = optional(number)
+          breakout_port_id = optional(number, 0)
           port_id          = number
-          slot_id          = optional(number)
+          slot_id          = optional(number, 1)
         }
       )))
-      mode     = optional(string)
+      mode     = optional(string, "trunk")
       pc_id    = number
-      priority = optional(string)
-      tags     = optional(list(map(string)))
+      priority = optional(string, "Best Effort")
+      tags     = optional(list(map(string)), [])
     }
   ))
 }
@@ -110,20 +106,20 @@ variable "port_channel_ethernet_uplinks" {
   EOT
   type = list(object(
     {
-      admin_speed                   = optional(string)
-      ethernet_network_group_policy = optional(string)
-      flow_control_policy           = optional(string)
+      admin_speed                   = optional(string, "Auto")
+      ethernet_network_group_policy = optional(string, "")
+      flow_control_policy           = optional(string, "")
       interfaces = optional(list(object(
         {
-          breakout_port_id = optional(number)
+          breakout_port_id = optional(number, 0)
           port_id          = number
-          slot_id          = optional(number)
+          slot_id          = optional(number, 1)
         }
       )))
-      link_aggregation_policy = optional(string)
-      link_control_policy     = optional(string)
+      link_aggregation_policy = optional(string, "")
+      link_control_policy     = optional(string, "")
       pc_id                   = number
-      tags                    = optional(list(map(string)))
+      tags                    = optional(list(map(string)), [])
     }
   ))
 }
@@ -149,17 +145,17 @@ variable "port_channel_fc_uplinks" {
   EOT
   type = list(object(
     {
-      admin_speed  = optional(string)
-      fill_pattern = optional(string)
+      admin_speed  = optional(string, "32Gbps")
+      fill_pattern = optional(string, "Arbff")
       interfaces = optional(list(object(
         {
-          breakout_port_id = optional(number)
+          breakout_port_id = optional(number, 0)
           port_id          = number
-          slot_id          = optional(number)
+          slot_id          = optional(number, 1)
         }
       )))
       pc_id   = number
-      tags    = optional(list(map(string)))
+      tags    = optional(list(map(string)), [])
       vsan_id = number
     }
   ))
@@ -186,18 +182,18 @@ variable "port_channel_fcoe_uplinks" {
   EOT
   type = list(object(
     {
-      admin_speed = optional(string)
+      admin_speed = optional(string, "Auto")
       interfaces = optional(list(object(
         {
-          breakout_port_id = optional(number)
+          breakout_port_id = optional(number, 0)
           port_id          = number
-          slot_id          = optional(number)
+          slot_id          = optional(number, 1)
         }
       )))
-      link_aggregation_policy = optional(string)
-      link_control_policy     = optional(string)
+      link_aggregation_policy = optional(string, "")
+      link_control_policy     = optional(string, "")
       pc_id                   = number
-      tags                    = optional(list(map(string)))
+      tags                    = optional(list(map(string)), [])
     }
   ))
 }
@@ -218,10 +214,10 @@ variable "port_modes" {
   EOT
   type = list(object(
     {
-      custom_mode = optional(string)
+      custom_mode = optional(string, "FibreChannel")
       port_list   = list(number)
-      slot_id     = optional(number)
-      tags        = optional(list(map(string)))
+      slot_id     = optional(number, 1)
+      tags        = optional(list(map(string)), [])
     }
   ))
 }
@@ -259,16 +255,16 @@ variable "port_role_appliances" {
   EOT
   type = list(object(
     {
-      admin_speed                     = optional(string)
-      breakout_port_id                = optional(number)
+      admin_speed                     = optional(string, "Auto")
+      breakout_port_id                = optional(number, 0)
       ethernet_network_control_policy = string
       ethernet_network_group_policy   = string
-      fec                             = optional(string)
-      mode                            = optional(string)
+      fec                             = optional(string, "Auto")
+      mode                            = optional(string, "trunk")
       port_list                       = string
-      priority                        = optional(string)
-      slot_id                         = optional(number)
-      tags                            = optional(list(map(string)))
+      priority                        = optional(string, "Best Effort")
+      slot_id                         = optional(number, 1)
+      tags                            = optional(list(map(string)), [])
     }
   ))
 }
@@ -297,16 +293,16 @@ variable "port_role_ethernet_uplinks" {
   EOT
   type = list(object(
     {
-      admin_speed                   = optional(string)
-      breakout_port_id              = optional(number)
-      ethernet_network_group_policy = optional(string)
-      fec                           = optional(string)
-      flow_control_policy           = optional(string)
-      link_aggregation_policy       = optional(string)
-      link_control_policy           = optional(string)
+      admin_speed                   = optional(string, "Auto")
+      breakout_port_id              = optional(number, 0)
+      ethernet_network_group_policy = optional(string, "")
+      fec                           = optional(string, "Auto")
+      flow_control_policy           = optional(string, "")
+      link_aggregation_policy       = optional(string, "")
+      link_control_policy           = optional(string, "")
       port_list                     = string
-      slot_id                       = optional(number)
-      tags                          = optional(list(map(string)))
+      slot_id                       = optional(number, 1)
+      tags                          = optional(list(map(string)), [])
     }
   ))
 }
@@ -327,11 +323,11 @@ variable "port_role_fc_storage" {
   EOT
   type = list(object(
     {
-      admin_speed      = optional(string)
-      breakout_port_id = optional(number)
+      admin_speed      = optional(string, "16Gbps")
+      breakout_port_id = optional(number, 0)
       port_list        = string
-      slot_id          = optional(number)
-      tags             = optional(list(map(string)))
+      slot_id          = optional(number, 1)
+      tags             = optional(list(map(string)), [])
       vsan_id          = number
     }
   ))
@@ -356,12 +352,12 @@ variable "port_role_fc_uplinks" {
   EOT
   type = list(object(
     {
-      admin_speed      = optional(string)
-      breakout_port_id = optional(number)
-      fill_pattern     = optional(string)
+      admin_speed      = optional(string, "32Gbps")
+      breakout_port_id = optional(number, 0)
+      fill_pattern     = optional(string, "Arbff")
       port_list        = string
-      slot_id          = optional(number)
-      tags             = optional(list(map(string)))
+      slot_id          = optional(number, 1)
+      tags             = optional(list(map(string)), [])
       vsan_id          = number
     }
   ))
@@ -389,14 +385,14 @@ variable "port_role_fcoe_uplinks" {
   EOT
   type = list(object(
     {
-      admin_speed             = optional(string)
-      breakout_port_id        = optional(number)
-      fec                     = optional(string)
-      link_aggregation_policy = optional(string)
-      link_control_policy     = optional(string)
+      admin_speed             = optional(string, "Auto")
+      breakout_port_id        = optional(number, 0)
+      fec                     = optional(string, "Auto")
+      link_aggregation_policy = optional(string, "")
+      link_control_policy     = optional(string, "")
       port_list               = string
-      slot_id                 = optional(number)
-      tags                    = optional(list(map(string)))
+      slot_id                 = optional(number, 1)
+      tags                    = optional(list(map(string)), [])
     }
   ))
 }
@@ -411,10 +407,10 @@ variable "port_role_servers" {
   EOT
   type = list(object(
     {
-      breakout_port_id = optional(number)
+      breakout_port_id = optional(number, 0)
       port_list        = string
-      slot_id          = optional(number)
-      tags             = optional(list(map(string)))
+      slot_id          = optional(number, 1)
+      tags             = optional(list(map(string)), [])
     }
   ))
 }

@@ -1,113 +1,6 @@
 locals {
   #__________________________________________________________
   #
-  # Port Policy > Port Channels > Appliance Section - Locals
-  #__________________________________________________________
-
-  port_channel_appliances = {
-    for v in var.port_channel_appliances : "${v.pc_id}" => {
-      admin_speed                     = v.admin_speed != null ? v.admin_speed : "Auto"
-      ethernet_network_control_policy = v.ethernet_network_control_policy
-      ethernet_network_group_policy   = v.ethernet_network_group_policy
-      interfaces = v.interfaces != null ? {
-        for s in v.interfaces : s.port_id => {
-          breakout_port_id = s.breakout_port_id != null ? s.breakout_port_id : 0
-          port_id          = s.port_id
-          slot_id          = s.slot_id != null ? s.slot_id : 1
-        }
-      } : {}
-      link_aggregation_policy = v.link_aggregation_policy != null ? v.link_aggregation_policy : ""
-      mode                    = v.mode != null ? v.mode : "trunk"
-      pc_id                   = v.pc_id
-      priority                = v.priority != null ? v.priority : "Best Effort"
-      tags                    = v.tags != null ? v.tags : length(var.tags) > 0 ? var.tags : []
-    }
-  }
-
-  #_________________________________________________________________
-  #
-  # Port Policy > Port Channels > Ethernet Uplinks Section - Locals
-  #_________________________________________________________________
-
-  port_channel_ethernet_uplinks = {
-    for v in var.port_channel_ethernet_uplinks : "${v.pc_id}" => {
-      admin_speed                   = v.admin_speed != null ? v.admin_speed : "Auto"
-      ethernet_network_group_policy = v.ethernet_network_group_policy != null ? v.ethernet_network_group_policy : ""
-      flow_control_policy           = v.flow_control_policy != null ? v.flow_control_policy : ""
-      interfaces = v.interfaces != null ? {
-        for s in v.interfaces : s.port_id => {
-          breakout_port_id = s.breakout_port_id != null ? s.breakout_port_id : 0
-          port_id          = s.port_id
-          slot_id          = s.slot_id != null ? s.slot_id : 1
-        }
-      } : {}
-      link_aggregation_policy = v.link_aggregation_policy != null ? v.link_aggregation_policy : ""
-      link_control_policy     = v.link_control_policy != null ? v.link_control_policy : ""
-      pc_id                   = v.pc_id
-      tags                    = v.tags != null ? v.tags : length(var.tags) > 0 ? var.tags : []
-    }
-  }
-
-  #______________________________________________________________________
-  #
-  # Port Policy > Port Channels > Fibre-Channel Uplinks Section - Locals
-  #______________________________________________________________________
-
-  port_channel_fc_uplinks = {
-    for v in var.port_channel_fc_uplinks : "${v.pc_id}" => {
-      admin_speed  = v.admin_speed != null ? v.admin_speed : "32Gbps"
-      fill_pattern = v.fill_pattern != null ? v.fill_pattern : "Arbff"
-      interfaces = v.interfaces != null ? {
-        for s in v.interfaces : s.port_id => {
-          breakout_port_id = s.breakout_port_id != null ? s.breakout_port_id : 0
-          port_id          = s.port_id
-          slot_id          = s.slot_id != null ? s.slot_id : 1
-        }
-      } : {}
-      pc_id   = v.pc_id
-      tags    = v.tags != null ? v.tags : length(var.tags) > 0 ? var.tags : []
-      vsan_id = v.vsan_id
-    }
-  }
-
-  #_________________________________________________________________
-  #
-  # Port Policy > Port Channels > FCoE Uplinks Section - Locals
-  #_________________________________________________________________
-
-  port_channel_fcoe_uplinks = {
-    for v in var.port_channel_fcoe_uplinks : "${v.pc_id}" => {
-      admin_speed = v.admin_speed != null ? v.admin_speed : "Auto"
-      interfaces = v.interfaces != null ? {
-        for s in v.interfaces : s.port_id => {
-          breakout_port_id = s.breakout_port_id != null ? s.breakout_port_id : 0
-          port_id          = s.port_id
-          slot_id          = s.slot_id != null ? s.slot_id : 1
-        }
-      } : {}
-      link_aggregation_policy = v.link_aggregation_policy != null ? v.link_aggregation_policy : ""
-      link_control_policy     = v.link_control_policy != null ? v.link_control_policy : ""
-      pc_id                   = v.pc_id
-      tags                    = v.tags != null ? v.tags : length(var.tags) > 0 ? var.tags : []
-    }
-  }
-
-  #__________________________________________________________
-  #
-  # Port Policy > Port Modes - Section - Locals
-  #__________________________________________________________
-
-  port_modes = {
-    for v in var.port_modes : "${element(v.port_list, 0)}" => {
-      custom_mode = v.custom_mode != null ? v.custom_mode : "FibreChannel"
-      port_list   = v.port_list != null ? v.port_list : [1, 4]
-      slot_id     = v.slot_id != null ? v.slot_id : null
-      tags        = v.tags != null ? v.tags : length(var.tags) > 0 ? var.tags : []
-    }
-  }
-
-  #__________________________________________________________
-  #
   # Port Policy > Port Roles > Appliance Section - Locals
   #__________________________________________________________
 
@@ -120,21 +13,21 @@ locals {
   */
   port_role_appliances_loop_1 = [
     for v in var.port_role_appliances : {
-      admin_speed                     = v.admin_speed != null ? v.admin_speed : "Auto"
-      breakout_port_id                = v.breakout_port_id != null ? v.breakout_port_id : 0
+      admin_speed                     = v.admin_speed
+      breakout_port_id                = v.breakout_port_id
       ethernet_network_control_policy = v.ethernet_network_control_policy
       ethernet_network_group_policy   = v.ethernet_network_group_policy
-      fec                             = v.fec != null ? v.fec : "Auto"
-      mode                            = v.mode != null ? v.mode : "trunk"
+      fec                             = v.fec
+      mode                            = v.mode
       port_list = flatten(
         [for s in compact(length(regexall("-", v.port_list)) > 0 ? tolist(split(",", v.port_list)
           ) : length(regexall(",", v.port_list)) > 0 ? tolist(split(",", v.port_list)) : [v.port_list]
           ) : length(regexall("-", s)) > 0 ? [for v in range(tonumber(element(split("-", s), 0)
         ), (tonumber(element(split("-", s), 1)) + 1)) : tonumber(v)] : [s]]
       )
-      priority = v.priority != null ? v.priority : "Best Effort"
-      slot_id  = v.slot_id != null ? v.slot_id : 1
-      tags     = v.tags != null ? v.tags : length(var.tags) > 0 ? var.tags : []
+      priority = v.priority
+      slot_id  = v.slot_id
+      tags     = v.tags != null ? v.tags : var.tags
     }
   ]
 
@@ -174,20 +67,20 @@ locals {
   */
   port_role_ethernet_uplinks_loop_1 = [
     for v in var.port_role_ethernet_uplinks : {
-      admin_speed                   = v.admin_speed != null ? v.admin_speed : "Auto"
-      breakout_port_id              = v.breakout_port_id != null ? v.breakout_port_id : 0
-      ethernet_network_group_policy = v.ethernet_network_group_policy != null ? v.ethernet_network_group_policy : ""
-      fec                           = v.fec != null ? v.fec : "Auto"
-      flow_control_policy           = v.flow_control_policy != null ? v.flow_control_policy : ""
-      link_control_policy           = v.link_control_policy != null ? v.link_control_policy : ""
+      admin_speed                   = v.admin_speed
+      breakout_port_id              = v.breakout_port_id
+      ethernet_network_group_policy = v.ethernet_network_group_policy
+      fec                           = v.fec
+      flow_control_policy           = v.flow_control_policy
+      link_control_policy           = v.link_control_policy
       port_list = flatten(
         [for s in compact(length(regexall("-", v.port_list)) > 0 ? tolist(split(",", v.port_list)
           ) : length(regexall(",", v.port_list)) > 0 ? tolist(split(",", v.port_list)) : [v.port_list]
           ) : length(regexall("-", s)) > 0 ? [for v in range(tonumber(element(split("-", s), 0)
         ), (tonumber(element(split("-", s), 1)) + 1)) : tonumber(v)] : [s]]
       )
-      slot_id = v.slot_id != null ? v.slot_id : 1
-      tags    = v.tags != null ? v.tags : length(var.tags) > 0 ? var.tags : []
+      slot_id = v.slot_id
+      tags    = tags != null ? v.tags : var.tags
     }
   ]
 
@@ -226,16 +119,16 @@ locals {
   */
   port_role_fc_storage_loop_1 = [
     for v in var.port_role_fc_storage : {
-      admin_speed      = v.admin_speed != null ? v.admin_speed : "16Gbps"
-      breakout_port_id = v.breakout_port_id != null ? v.breakout_port_id : 0
+      admin_speed      = v.admin_speed
+      breakout_port_id = v.breakout_port_id
       port_list = flatten(
         [for s in compact(length(regexall("-", v.port_list)) > 0 ? tolist(split(",", v.port_list)
           ) : length(regexall(",", v.port_list)) > 0 ? tolist(split(",", v.port_list)) : [v.port_list]
           ) : length(regexall("-", s)) > 0 ? [for v in range(tonumber(element(split("-", s), 0)
         ), (tonumber(element(split("-", s), 1)) + 1)) : tonumber(v)] : [s]]
       )
-      slot_id = v.slot_id != null ? v.slot_id : 1
-      tags    = v.tags != null ? v.tags : length(var.tags) > 0 ? var.tags : []
+      slot_id = v.slot_id
+      tags    = tags != null ? v.tags : var.tags
       vsan_id = v.vsan_id
     }
   ]
@@ -272,16 +165,16 @@ locals {
   */
   port_role_fc_uplinks_loop_1 = [
     for v in var.port_role_fc_uplinks : {
-      admin_speed      = v.admin_speed != null ? v.admin_speed : "32Gbps"
-      breakout_port_id = v.breakout_port_id != null ? v.breakout_port_id : 0
+      admin_speed      = v.admin_speed
+      breakout_port_id = v.breakout_port_id
       port_list = flatten(
         [for s in compact(length(regexall("-", v.port_list)) > 0 ? tolist(split(",", v.port_list)
           ) : length(regexall(",", v.port_list)) > 0 ? tolist(split(",", v.port_list)) : [v.port_list]
           ) : length(regexall("-", s)) > 0 ? [for v in range(tonumber(element(split("-", s), 0)
         ), (tonumber(element(split("-", s), 1)) + 1)) : tonumber(v)] : [s]]
       )
-      slot_id = v.slot_id != null ? v.slot_id : 1
-      tags    = v.tags != null ? v.tags : length(var.tags) > 0 ? var.tags : []
+      slot_id = v.slot_id
+      tags    = tags != null ? v.tags : var.tags
       vsan_id = v.vsan_id
     }
   ]
@@ -318,18 +211,18 @@ locals {
   */
   port_role_fcoe_uplinks_loop_1 = [
     for v in var.port_role_fcoe_uplinks : {
-      admin_speed         = v.admin_speed != null ? v.admin_speed : "Auto"
-      breakout_port_id    = v.breakout_port_id != null ? v.breakout_port_id : 0
-      fec                 = v.fec != null ? v.fec : "Auto"
-      link_control_policy = v.link_control_policy != null ? v.link_control_policy : ""
+      admin_speed         = v.admin_speed
+      breakout_port_id    = v.breakout_port_id
+      fec                 = v.fec
+      link_control_policy = v.link_control_policy
       port_list = flatten(
         [for s in compact(length(regexall("-", v.port_list)) > 0 ? tolist(split(",", v.port_list)
           ) : length(regexall(",", v.port_list)) > 0 ? tolist(split(",", v.port_list)) : [v.port_list]
           ) : length(regexall("-", s)) > 0 ? [for v in range(tonumber(element(split("-", s), 0)
         ), (tonumber(element(split("-", s), 1)) + 1)) : tonumber(v)] : [s]]
       )
-      slot_id = v.slot_id != null ? v.slot_id : 1
-      tags    = v.tags != null ? v.tags : length(var.tags) > 0 ? var.tags : []
+      slot_id = v.slot_id
+      tags    = tags != null ? v.tags : var.tags
     }
   ]
 
@@ -366,14 +259,14 @@ locals {
   */
   port_role_servers_loop_1 = [
     for v in var.port_role_servers : {
-      breakout_port_id = v.breakout_port_id != null ? v.breakout_port_id : 0
+      breakout_port_id = v.breakout_port_id
       port_list = flatten(
         [for s in compact(length(regexall("-", v.port_list)) > 0 ? tolist(split(",", v.port_list)
           ) : length(regexall(",", v.port_list)) > 0 ? tolist(split(",", v.port_list)) : [v.port_list]
           ) : length(regexall("-", s)) > 0 ? [for v in range(tonumber(element(split("-", s), 0)
         ), (tonumber(element(split("-", s), 1)) + 1)) : tonumber(v)] : [s]]
       )
-      slot_id = v.slot_id != null ? v.slot_id : 1
+      slot_id = v.slot_id
       tags    = v.tags != null ? v.tags : length(var.tags) > 0 ? var.tags : []
     }
   ]
@@ -549,7 +442,7 @@ resource "intersight_fabric_appliance_pc_role" "port_channel_appliances" {
   depends_on = [
     intersight_fabric_port_policy.port_policy
   ]
-  for_each    = local.port_channel_appliances
+  for_each    = { for v in var.port_channel_appliances : v.pc_id => v }
   admin_speed = each.value.admin_speed
   # aggregate_port_id = each.value.breakout_port_id
   mode     = each.value.mode
@@ -610,7 +503,7 @@ resource "intersight_fabric_uplink_pc_role" "port_channel_ethernet_uplinks" {
   depends_on = [
     intersight_fabric_port_policy.port_policy
   ]
-  for_each    = local.port_channel_ethernet_uplinks
+  for_each    = { for v in var.port_channel_ethernet_uplinks : v.pc_id => v }
   admin_speed = each.value.admin_speed
   pc_id       = each.value.pc_id
   port_policy {
@@ -676,7 +569,7 @@ resource "intersight_fabric_fc_uplink_pc_role" "port_channel_fc_uplinks" {
   depends_on = [
     intersight_fabric_port_policy.port_policy
   ]
-  for_each    = local.port_channel_fc_uplinks
+  for_each    = { for v in var.port_channel_fc_uplinks : v.pc_id => v }
   admin_speed = each.value.admin_speed
   pc_id       = each.value.pc_id
   vsan_id     = each.value.vsan_id
@@ -711,7 +604,7 @@ resource "intersight_fabric_fcoe_uplink_pc_role" "port_channel_fcoe_uplinks" {
   depends_on = [
     intersight_fabric_port_policy.port_policy
   ]
-  for_each    = local.port_channel_fcoe_uplinks
+  for_each    = { for v in var.port_channel_fcoe_uplinks : v.pc_id => v }
   admin_speed = each.value.admin_speed
   pc_id       = each.value.pc_id
   port_policy {
@@ -761,7 +654,7 @@ resource "intersight_fabric_port_mode" "port_modes" {
   depends_on = [
     intersight_fabric_port_policy.port_policy
   ]
-  for_each      = local.port_modes
+  for_each      = { for v in var.port_modes : element(v.port_list, 0) => v }
   custom_mode   = each.value.custom_mode
   port_id_end   = element(each.value.port_list, 1)
   port_id_start = element(each.value.port_list, 0)
