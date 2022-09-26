@@ -5,5 +5,5 @@
 
 output "moid" {
   description = "UCS Domain Port Policy Managed Object ID (moid)."
-  value       = intersight_fabric_port_policy.port_policy.moid
+  value       = intersight_fabric_port_policy.port.moid
 }

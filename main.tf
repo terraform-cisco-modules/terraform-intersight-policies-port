@@ -80,7 +80,7 @@ locals {
         ), (tonumber(element(split("-", s), 1)) + 1)) : tonumber(v)] : [s]]
       )
       slot_id = v.slot_id
-      tags    = tags != null ? v.tags : var.tags
+      tags    = v.tags != null ? v.tags : var.tags
     }
   ]
 
@@ -128,7 +128,7 @@ locals {
         ), (tonumber(element(split("-", s), 1)) + 1)) : tonumber(v)] : [s]]
       )
       slot_id = v.slot_id
-      tags    = tags != null ? v.tags : var.tags
+      tags    = v.tags != null ? v.tags : var.tags
       vsan_id = v.vsan_id
     }
   ]
@@ -174,7 +174,7 @@ locals {
         ), (tonumber(element(split("-", s), 1)) + 1)) : tonumber(v)] : [s]]
       )
       slot_id = v.slot_id
-      tags    = tags != null ? v.tags : var.tags
+      tags    = v.tags != null ? v.tags : var.tags
       vsan_id = v.vsan_id
     }
   ]
@@ -222,7 +222,7 @@ locals {
         ), (tonumber(element(split("-", s), 1)) + 1)) : tonumber(v)] : [s]]
       )
       slot_id = v.slot_id
-      tags    = tags != null ? v.tags : var.tags
+      tags    = v.tags != null ? v.tags : var.tags
     }
   ]
 
@@ -288,31 +288,31 @@ locals {
   }
 
   ethernet_network_control_policies = toset(compact(concat([
-    for v in local.port_channel_appliances : v.ethernet_network_control_policy
+    for v in var.port_channel_appliances : v.ethernet_network_control_policy
     ], [for v in local.port_role_appliances : v.ethernet_network_control_policy]
   )))
 
   ethernet_network_group_policies = toset(compact(concat([
-    for v in local.port_channel_appliances : v.ethernet_network_group_policy
-    ], [for v in local.port_channel_ethernet_uplinks : v.ethernet_network_group_policy
+    for v in var.port_channel_appliances : v.ethernet_network_group_policy
+    ], [for v in var.port_channel_ethernet_uplinks : v.ethernet_network_group_policy
     ], [for v in local.port_role_appliances : v.ethernet_network_group_policy
     ], [for v in local.port_role_ethernet_uplinks : v.ethernet_network_group_policy]
   )))
 
   flow_control_policies = toset(compact(concat([
-    for v in local.port_channel_ethernet_uplinks : v.flow_control_policy
+    for v in var.port_channel_ethernet_uplinks : v.flow_control_policy
     ], [for v in local.port_role_ethernet_uplinks : v.flow_control_policy]
   )))
 
   link_aggregation_policies = toset(compact(concat([
-    for v in local.port_channel_appliances : v.link_aggregation_policy
-    ], [for v in local.port_channel_ethernet_uplinks : v.link_aggregation_policy
-    ], [for v in local.port_channel_fcoe_uplinks : v.link_aggregation_policy]
+    for v in var.port_channel_appliances : v.link_aggregation_policy
+    ], [for v in var.port_channel_ethernet_uplinks : v.link_aggregation_policy
+    ], [for v in var.port_channel_fcoe_uplinks : v.link_aggregation_policy]
   )))
 
   link_control_policies = toset(compact(concat([
-    for v in local.port_channel_ethernet_uplinks : v.link_control_policy
-    ], [for v in local.port_channel_fcoe_uplinks : v.link_control_policy
+    for v in var.port_channel_ethernet_uplinks : v.link_control_policy
+    ], [for v in var.port_channel_fcoe_uplinks : v.link_control_policy
     ], [for v in local.port_role_ethernet_uplinks : v.link_control_policy
     ], [for v in local.port_role_fcoe_uplinks : v.link_control_policy]
   )))
@@ -328,7 +328,7 @@ locals {
 data "intersight_organization_organization" "org_moid" {
   for_each = {
     for v in [var.organization] : v => v if length(
-      regexall("[[:xdigit:]]{24}", var.organization)
+      regexall("[[:xdigit:]]{24}", v)
     ) == 0
   }
   name = each.value
@@ -341,7 +341,7 @@ data "intersight_organization_organization" "org_moid" {
 #____________________________________________________________
 
 data "intersight_fabric_switch_profile" "profiles" {
-  for_each = { for v in var.profiles : v => v if length(var.profiles) > 0 }
+  for_each = { for v in var.profiles : v => v if length(regexall("[[:xdigit:]]{24}", v)) == 0 }
   name     = each.value
 }
 
@@ -352,8 +352,12 @@ data "intersight_fabric_switch_profile" "profiles" {
 #___________________________________________________________________
 
 data "intersight_fabric_eth_network_control_policy" "ethernet_network_control" {
-  for_each = { for v in local.ethernet_network_control_policies : v => v }
-  name     = each.value
+  for_each = {
+    for v in local.ethernet_network_control_policies : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 #___________________________________________________________________
@@ -363,8 +367,12 @@ data "intersight_fabric_eth_network_control_policy" "ethernet_network_control" {
 #___________________________________________________________________
 
 data "intersight_fabric_eth_network_group_policy" "ethernet_network_group" {
-  for_each = { for v in local.ethernet_network_group_policies : v => v }
-  name     = each.value
+  for_each = {
+    for v in local.ethernet_network_group_policies : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 #___________________________________________________________________
@@ -374,8 +382,12 @@ data "intersight_fabric_eth_network_group_policy" "ethernet_network_group" {
 #___________________________________________________________________
 
 data "intersight_fabric_flow_control_policy" "flow_control" {
-  for_each = { for v in local.flow_control_policies : v => v }
-  name     = each.value
+  for_each = {
+    for v in local.flow_control_policies : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 #___________________________________________________________________
@@ -385,8 +397,12 @@ data "intersight_fabric_flow_control_policy" "flow_control" {
 #___________________________________________________________________
 
 data "intersight_fabric_link_aggregation_policy" "link_aggregation" {
-  for_each = { for v in local.link_aggregation_policies : v => v }
-  name     = each.value
+  for_each = {
+    for v in local.link_aggregation_policies : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 #___________________________________________________________________
@@ -396,8 +412,12 @@ data "intersight_fabric_link_aggregation_policy" "link_aggregation" {
 #___________________________________________________________________
 
 data "intersight_fabric_link_control_policy" "link_control" {
-  for_each = { for v in local.link_control_policies : v => v }
-  name     = each.value
+  for_each = {
+    for v in local.link_control_policies : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 #__________________________________________________________________
@@ -406,7 +426,7 @@ data "intersight_fabric_link_control_policy" "link_control" {
 # GUI Location: Policies > Create Policy > Port
 #__________________________________________________________________
 
-resource "intersight_fabric_port_policy" "port_policy" {
+resource "intersight_fabric_port_policy" "port" {
   depends_on = [
     data.intersight_fabric_eth_network_control_policy.ethernet_network_control,
     data.intersight_fabric_eth_network_group_policy.ethernet_network_group,
@@ -428,7 +448,9 @@ resource "intersight_fabric_port_policy" "port_policy" {
   dynamic "profiles" {
     for_each = { for v in var.profiles : v => v }
     content {
-      moid        = data.intersight_fabric_switch_profile.profiles[profiles.value].results[0].moid
+      moid = length(
+        regexall("[[:xdigit:]]{24}", profiles.value)
+      ) > 0 ? profiles.value : data.intersight_fabric_switch_profile.profiles[profiles.value].results[0].moid
       object_type = "fabric.SwitchProfile"
     }
   }
@@ -449,7 +471,7 @@ resource "intersight_fabric_port_policy" "port_policy" {
 
 resource "intersight_fabric_appliance_pc_role" "port_channel_appliances" {
   depends_on = [
-    intersight_fabric_port_policy.port_policy
+    intersight_fabric_port_policy.port
   ]
   for_each    = { for v in var.port_channel_appliances : v.pc_id => v }
   admin_speed = each.value.admin_speed
@@ -458,12 +480,14 @@ resource "intersight_fabric_appliance_pc_role" "port_channel_appliances" {
   pc_id    = each.value.pc_id
   priority = each.value.priority
   port_policy {
-    moid = intersight_fabric_port_policy.port_policy.moid
+    moid = intersight_fabric_port_policy.port.moid
   }
   dynamic "eth_network_control_policy" {
     for_each = toset(compact([each.value.ethernet_network_control_policy]))
     content {
-      moid = data.intersight_fabric_eth_network_control_policy.ethernet_network_control[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", eth_network_control_policy.value)
+        ) > 0 ? eth_network_control_policy.value : data.intersight_fabric_eth_network_control_policy.ethernet_network_control[
         eth_network_control_policy.value].results[0
       ].moid
     }
@@ -471,7 +495,9 @@ resource "intersight_fabric_appliance_pc_role" "port_channel_appliances" {
   dynamic "eth_network_group_policy" {
     for_each = toset(compact([each.value.ethernet_network_group_policy]))
     content {
-      moid = data.intersight_fabric_eth_network_group_policy.ethernet_network_group[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", eth_network_group_policy.value)
+        ) > 0 ? eth_network_group_policy.value : data.intersight_fabric_eth_network_group_policy.ethernet_network_group[
         eth_network_group_policy.value].results[0
       ].moid
     }
@@ -479,7 +505,9 @@ resource "intersight_fabric_appliance_pc_role" "port_channel_appliances" {
   dynamic "link_aggregation_policy" {
     for_each = toset(compact([each.value.link_aggregation_policy]))
     content {
-      moid = data.intersight_fabric_link_aggregation_policy.link_aggregation[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", link_aggregation_policy.value)
+        ) > 0 ? link_aggregation_policy.value : data.intersight_fabric_link_aggregation_policy.link_aggregation[
         link_aggregation_policy.value].results[0
       ].moid
     }
@@ -510,18 +538,20 @@ resource "intersight_fabric_appliance_pc_role" "port_channel_appliances" {
 
 resource "intersight_fabric_uplink_pc_role" "port_channel_ethernet_uplinks" {
   depends_on = [
-    intersight_fabric_port_policy.port_policy
+    intersight_fabric_port_policy.port
   ]
   for_each    = { for v in var.port_channel_ethernet_uplinks : v.pc_id => v }
   admin_speed = each.value.admin_speed
   pc_id       = each.value.pc_id
   port_policy {
-    moid = intersight_fabric_port_policy.port_policy.moid
+    moid = intersight_fabric_port_policy.port.moid
   }
   dynamic "eth_network_group_policy" {
     for_each = toset(compact([each.value.ethernet_network_group_policy]))
     content {
-      moid = data.intersight_fabric_eth_network_group_policy.ethernet_network_group[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", eth_network_group_policy.value)
+        ) > 0 ? eth_network_group_policy.value : data.intersight_fabric_eth_network_group_policy.ethernet_network_group[
         eth_network_group_policy.value].results[0
       ].moid
     }
@@ -529,7 +559,9 @@ resource "intersight_fabric_uplink_pc_role" "port_channel_ethernet_uplinks" {
   dynamic "flow_control_policy" {
     for_each = toset(compact([each.value.flow_control_policy]))
     content {
-      moid = data.intersight_fabric_flow_control_policy.flow_control[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", flow_control_policy.value)
+        ) > 0 ? flow_control_policy.value : data.intersight_fabric_flow_control_policy.flow_control[
         flow_control_policy.value].results[0
       ].moid
     }
@@ -537,7 +569,9 @@ resource "intersight_fabric_uplink_pc_role" "port_channel_ethernet_uplinks" {
   dynamic "link_aggregation_policy" {
     for_each = toset(compact([each.value.link_aggregation_policy]))
     content {
-      moid = data.intersight_fabric_link_aggregation_policy.link_aggregation[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", link_aggregation_policy.value)
+        ) > 0 ? link_aggregation_policy.value : data.intersight_fabric_link_aggregation_policy.link_aggregation[
         link_aggregation_policy.value].results[0
       ].moid
     }
@@ -545,7 +579,9 @@ resource "intersight_fabric_uplink_pc_role" "port_channel_ethernet_uplinks" {
   dynamic "link_control_policy" {
     for_each = toset(compact([each.value.link_control_policy]))
     content {
-      moid = data.intersight_fabric_link_control_policy.link_control[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", link_control_policy.value)
+        ) > 0 ? link_control_policy.value : data.intersight_fabric_link_control_policy.link_control[
         link_control_policy.value].results[0
       ].moid
     }
@@ -576,14 +612,14 @@ resource "intersight_fabric_uplink_pc_role" "port_channel_ethernet_uplinks" {
 
 resource "intersight_fabric_fc_uplink_pc_role" "port_channel_fc_uplinks" {
   depends_on = [
-    intersight_fabric_port_policy.port_policy
+    intersight_fabric_port_policy.port
   ]
   for_each    = { for v in var.port_channel_fc_uplinks : v.pc_id => v }
   admin_speed = each.value.admin_speed
   pc_id       = each.value.pc_id
   vsan_id     = each.value.vsan_id
   port_policy {
-    moid = intersight_fabric_port_policy.port_policy.moid
+    moid = intersight_fabric_port_policy.port.moid
   }
   dynamic "ports" {
     for_each = each.value.interfaces
@@ -611,18 +647,20 @@ resource "intersight_fabric_fc_uplink_pc_role" "port_channel_fc_uplinks" {
 
 resource "intersight_fabric_fcoe_uplink_pc_role" "port_channel_fcoe_uplinks" {
   depends_on = [
-    intersight_fabric_port_policy.port_policy
+    intersight_fabric_port_policy.port
   ]
   for_each    = { for v in var.port_channel_fcoe_uplinks : v.pc_id => v }
   admin_speed = each.value.admin_speed
   pc_id       = each.value.pc_id
   port_policy {
-    moid = intersight_fabric_port_policy.port_policy.moid
+    moid = intersight_fabric_port_policy.port.moid
   }
   dynamic "link_aggregation_policy" {
     for_each = toset(compact([each.value.link_aggregation_policy]))
     content {
-      moid = data.intersight_fabric_link_aggregation_policy.link_aggregation[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", link_aggregation_policy.value)
+        ) > 0 ? link_aggregation_policy.value : data.intersight_fabric_link_aggregation_policy.link_aggregation[
         link_aggregation_policy.value].results[0
       ].moid
     }
@@ -630,7 +668,9 @@ resource "intersight_fabric_fcoe_uplink_pc_role" "port_channel_fcoe_uplinks" {
   dynamic "link_control_policy" {
     for_each = toset(compact([each.value.link_control_policy]))
     content {
-      moid = data.intersight_fabric_link_control_policy.link_control[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", link_control_policy.value)
+        ) > 0 ? link_control_policy.value : data.intersight_fabric_link_control_policy.link_control[
         link_control_policy.value].results[0
       ].moid
     }
@@ -661,7 +701,7 @@ resource "intersight_fabric_fcoe_uplink_pc_role" "port_channel_fcoe_uplinks" {
 
 resource "intersight_fabric_port_mode" "port_modes" {
   depends_on = [
-    intersight_fabric_port_policy.port_policy
+    intersight_fabric_port_policy.port
   ]
   for_each      = { for v in var.port_modes : element(v.port_list, 0) => v }
   custom_mode   = each.value.custom_mode
@@ -669,7 +709,7 @@ resource "intersight_fabric_port_mode" "port_modes" {
   port_id_start = element(each.value.port_list, 0)
   slot_id       = each.value.slot_id
   port_policy {
-    moid = intersight_fabric_port_policy.port_policy.moid
+    moid = intersight_fabric_port_policy.port.moid
   }
   dynamic "tags" {
     for_each = each.value.tags
@@ -689,7 +729,7 @@ resource "intersight_fabric_port_mode" "port_modes" {
 
 resource "intersight_fabric_appliance_role" "port_role_appliances" {
   depends_on = [
-    intersight_fabric_port_policy.port_policy
+    intersight_fabric_port_policy.port
   ]
   for_each          = local.port_role_appliances
   admin_speed       = each.value.admin_speed
@@ -700,12 +740,14 @@ resource "intersight_fabric_appliance_role" "port_role_appliances" {
   priority          = each.value.priority
   slot_id           = each.value.slot_id
   port_policy {
-    moid = intersight_fabric_port_policy.port_policy.moid
+    moid = intersight_fabric_port_policy.port.moid
   }
   dynamic "eth_network_control_policy" {
     for_each = toset(compact([each.value.ethernet_network_control_policy]))
     content {
-      moid = data.intersight_fabric_eth_network_control_policy.ethernet_network_control[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", eth_network_control_policy.value)
+        ) > 0 ? eth_network_control_policy.value : data.intersight_fabric_eth_network_control_policy.ethernet_network_control[
         eth_network_control_policy.value].results[0
       ].moid
     }
@@ -713,7 +755,9 @@ resource "intersight_fabric_appliance_role" "port_role_appliances" {
   dynamic "eth_network_group_policy" {
     for_each = toset(compact([each.value.ethernet_network_group_policy]))
     content {
-      moid = data.intersight_fabric_eth_network_group_policy.ethernet_network_group[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", eth_network_group_policy.value)
+        ) > 0 ? eth_network_group_policy.value : data.intersight_fabric_eth_network_group_policy.ethernet_network_group[
         eth_network_group_policy.value].results[0
       ].moid
     }
@@ -735,7 +779,7 @@ resource "intersight_fabric_appliance_role" "port_role_appliances" {
 
 resource "intersight_fabric_uplink_role" "port_role_ethernet_uplinks" {
   depends_on = [
-    intersight_fabric_port_policy.port_policy
+    intersight_fabric_port_policy.port
   ]
   for_each          = local.port_role_ethernet_uplinks
   admin_speed       = each.value.admin_speed
@@ -744,12 +788,14 @@ resource "intersight_fabric_uplink_role" "port_role_ethernet_uplinks" {
   port_id           = each.value.port_id
   slot_id           = each.value.slot_id
   port_policy {
-    moid = intersight_fabric_port_policy.port_policy.moid
+    moid = intersight_fabric_port_policy.port.moid
   }
   dynamic "eth_network_group_policy" {
     for_each = toset(compact([each.value.ethernet_network_group_policy]))
     content {
-      moid = data.intersight_fabric_eth_network_group_policy.ethernet_network_group[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", eth_network_group_policy.value)
+        ) > 0 ? eth_network_group_policy.value : data.intersight_fabric_eth_network_group_policy.ethernet_network_group[
         eth_network_group_policy.value].results[0
       ].moid
     }
@@ -757,7 +803,9 @@ resource "intersight_fabric_uplink_role" "port_role_ethernet_uplinks" {
   dynamic "flow_control_policy" {
     for_each = toset(compact([each.value.flow_control_policy]))
     content {
-      moid = data.intersight_fabric_flow_control_policy.flow_control[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", flow_control_policy.value)
+        ) > 0 ? flow_control_policy.value : data.intersight_fabric_flow_control_policy.flow_control[
         flow_control_policy.value].results[0
       ].moid
     }
@@ -765,7 +813,9 @@ resource "intersight_fabric_uplink_role" "port_role_ethernet_uplinks" {
   dynamic "link_control_policy" {
     for_each = toset(compact([each.value.link_control_policy]))
     content {
-      moid = data.intersight_fabric_link_control_policy.link_control[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", link_control_policy.value)
+        ) > 0 ? link_control_policy.value : data.intersight_fabric_link_control_policy.link_control[
         link_control_policy.value].results[0
       ].moid
     }
@@ -788,7 +838,7 @@ resource "intersight_fabric_uplink_role" "port_role_ethernet_uplinks" {
 
 resource "intersight_fabric_fc_storage_role" "port_role_fc_storage" {
   depends_on = [
-    intersight_fabric_port_policy.port_policy
+    intersight_fabric_port_policy.port
   ]
   for_each          = local.port_role_fc_storage
   admin_speed       = each.value.admin_speed
@@ -797,7 +847,7 @@ resource "intersight_fabric_fc_storage_role" "port_role_fc_storage" {
   slot_id           = each.value.slot_id
   vsan_id           = each.value.vsan_id
   port_policy {
-    moid = intersight_fabric_port_policy.port_policy.moid
+    moid = intersight_fabric_port_policy.port.moid
   }
   dynamic "tags" {
     for_each = each.value.tags
@@ -817,7 +867,7 @@ resource "intersight_fabric_fc_storage_role" "port_role_fc_storage" {
 
 resource "intersight_fabric_fc_uplink_role" "port_role_fc_uplinks" {
   depends_on = [
-    intersight_fabric_port_policy.port_policy
+    intersight_fabric_port_policy.port
   ]
   for_each          = local.port_role_fc_uplinks
   admin_speed       = each.value.admin_speed
@@ -827,7 +877,7 @@ resource "intersight_fabric_fc_uplink_role" "port_role_fc_uplinks" {
   slot_id           = each.value.slot_id
   vsan_id           = each.value.vsan_id
   port_policy {
-    moid = intersight_fabric_port_policy.port_policy.moid
+    moid = intersight_fabric_port_policy.port.moid
   }
   dynamic "tags" {
     for_each = each.value.tags
@@ -847,7 +897,7 @@ resource "intersight_fabric_fc_uplink_role" "port_role_fc_uplinks" {
 
 resource "intersight_fabric_fcoe_uplink_role" "port_role_fcoe_uplinks" {
   depends_on = [
-    intersight_fabric_port_policy.port_policy
+    intersight_fabric_port_policy.port
   ]
   for_each          = local.port_role_fcoe_uplinks
   admin_speed       = each.value.admin_speed
@@ -856,12 +906,14 @@ resource "intersight_fabric_fcoe_uplink_role" "port_role_fcoe_uplinks" {
   port_id           = each.value.port_id
   slot_id           = each.value.slot_id
   port_policy {
-    moid = intersight_fabric_port_policy.port_policy.moid
+    moid = intersight_fabric_port_policy.port.moid
   }
   dynamic "link_control_policy" {
     for_each = toset(compact([each.value.link_control_policy]))
     content {
-      moid = data.intersight_fabric_link_control_policy.link_control[
+      moid = length(
+        regexall("[[:xdigit:]]{24}", link_control_policy.value)
+        ) > 0 ? link_control_policy.value : data.intersight_fabric_link_control_policy.link_control[
         link_control_policy.value].results[0
       ].moid
     }
@@ -884,14 +936,14 @@ resource "intersight_fabric_fcoe_uplink_role" "port_role_fcoe_uplinks" {
 
 resource "intersight_fabric_server_role" "port_role_servers" {
   depends_on = [
-    intersight_fabric_port_policy.port_policy
+    intersight_fabric_port_policy.port
   ]
   for_each          = local.port_role_servers
   aggregate_port_id = each.value.breakout_port_id
   port_id           = each.value.port_id
   slot_id           = each.value.slot_id
   port_policy {
-    moid = intersight_fabric_port_policy.port_policy.moid
+    moid = intersight_fabric_port_policy.port.moid
   }
   dynamic "tags" {
     for_each = each.value.tags
