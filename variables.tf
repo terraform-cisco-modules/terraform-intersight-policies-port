@@ -12,11 +12,11 @@ variable "description" {
 variable "device_model" {
   default     = "UCS-FI-6454"
   description = <<-EOT
-  This field specifies the device model template for the Port Policy.
-    * UCS-FI-6454 - The standard 4th generation UCS Fabric Interconnect with 54 ports.
-    * UCS-FI-64108 - The expanded 4th generation UCS Fabric Interconnect with 108 ports.
-    * UCS-FI-6536 - The standard 5th generation UCS Fabric Interconnect with 36 ports.
-    * unknown - Unknown device type, usage is TBD.
+    This field specifies the device model template for the Port Policy.
+      * UCS-FI-6454 - The standard 4th generation UCS Fabric Interconnect with 54 ports.
+      * UCS-FI-64108 - The expanded 4th generation UCS Fabric Interconnect with 108 ports.
+      * UCS-FI-6536 - The standard 5th generation UCS Fabric Interconnect with 36 ports.
+      * unknown - Unknown device type, usage is TBD.
   EOT
   type        = string
 }
