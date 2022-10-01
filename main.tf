@@ -598,7 +598,8 @@ resource "intersight_fabric_uplink_pc_role" "port_channel_ethernet_uplinks" {
 
 resource "intersight_fabric_fc_uplink_pc_role" "port_channel_fc_uplinks" {
   depends_on = [
-    intersight_fabric_port_policy.port
+    intersight_fabric_port_policy.port,
+    intersight_fabric_port_mode.port_modes
   ]
   for_each    = { for v in var.port_channel_fc_uplinks : v.pc_id => v }
   admin_speed = each.value.admin_speed
@@ -824,7 +825,8 @@ resource "intersight_fabric_uplink_role" "port_role_ethernet_uplinks" {
 
 resource "intersight_fabric_fc_storage_role" "port_role_fc_storage" {
   depends_on = [
-    intersight_fabric_port_policy.port
+    intersight_fabric_port_policy.port,
+    intersight_fabric_port_mode.port_modes
   ]
   for_each          = local.port_role_fc_storage
   admin_speed       = each.value.admin_speed
@@ -853,7 +855,8 @@ resource "intersight_fabric_fc_storage_role" "port_role_fc_storage" {
 
 resource "intersight_fabric_fc_uplink_role" "port_role_fc_uplinks" {
   depends_on = [
-    intersight_fabric_port_policy.port
+    intersight_fabric_port_policy.port,
+    intersight_fabric_port_mode.port_modes
   ]
   for_each          = local.port_role_fc_uplinks
   admin_speed       = each.value.admin_speed
