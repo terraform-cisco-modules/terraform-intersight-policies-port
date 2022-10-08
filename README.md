@@ -139,14 +139,11 @@ export TF_VAR_secretkeyfile="<secret-key-file-location>"
 
 | Name | Version |
 |------|---------|
-| <a name="provider_intersight"></a> [intersight](#provider\_intersight) | 1.0.32 |
+| <a name="provider_intersight"></a> [intersight](#provider\_intersight) | >=1.0.32 |
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_apikey"></a> [apikey](#input\_apikey) | Intersight API Key. | `string` | n/a | yes |
-| <a name="input_endpoint"></a> [endpoint](#input\_endpoint) | Intersight URL. | `string` | `"https://intersight.com"` | no |
-| <a name="input_secretkey"></a> [secretkey](#input\_secretkey) | Intersight Secret Key. | `string` | n/a | yes |
 | <a name="input_description"></a> [description](#input\_description) | Description for the Policy. | `string` | `""` | no |
 | <a name="input_device_model"></a> [device\_model](#input\_device\_model) | This field specifies the device model template for the Port Policy.<br>  * UCS-FI-6454 - The standard 4th generation UCS Fabric Interconnect with 54 ports.<br>  * UCS-FI-64108 - The expanded 4th generation UCS Fabric Interconnect with 108 ports.<br>  * UCS-FI-6536 - The standard 5th generation UCS Fabric Interconnect with 36 ports.<br>  * unknown - Unknown device type, usage is TBD. | `string` | `"UCS-FI-6454"` | no |
 | <a name="input_domain_profiles"></a> [domain\_profiles](#input\_domain\_profiles) | Map for Moid based Domain Profile Sources. | `any` | `{}` | no |

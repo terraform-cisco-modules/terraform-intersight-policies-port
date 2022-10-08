@@ -83,8 +83,8 @@ output "port_role_fc_uplinks" {
 output "port_role_fcoe_uplinks" {
   description = "Port Policy - Port Role FCoE Uplinks Moid(s)."
   value = {
-    for v in sort(keys(intersight_fabric_fcoe_uplink_pc_role.port_role_fcoe_uplinks)
-    ) : v => intersight_fabric_fcoe_uplink_pc_role.port_role_fcoe_uplinks[v].moid
+    for v in sort(keys(intersight_fabric_fcoe_uplink_role.port_role_fcoe_uplinks)
+    ) : v => intersight_fabric_fcoe_uplink_role.port_role_fcoe_uplinks[v].moid
   }
 }
 

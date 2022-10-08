@@ -40,8 +40,9 @@ module "main" {
   source       = "../.."
   description  = "${var.name} Port Policy."
   device_model = "UCS-FI-6536"
+  moids        = true
   name         = var.name
-  organization = "terratest"
+  organization = data.intersight_organization_organization.org_moid.results[0].moid
   policies = {
     ethernet_network_group = {
       "${var.name}" = {
@@ -124,18 +125,18 @@ output "link_control" {
 }
 
 output "port_channel_ethernet_uplink" {
-  value = module.main.port_channel_ethernet_uplinks[31].moid
+  value = module.main.port_channel_ethernet_uplinks["31"]
 }
 
 output "port_channel_fc_uplink" {
-  value = module.main.port_channel_fc_uplinks[133].moid
+  value = module.main.port_channel_fc_uplinks["133"]
 }
 
 output "port_mode" {
-  value = module.main.port_modes[33].moid
+  value = module.main.port_modes["33"]
 }
 
 output "port_role_server" {
-  value = module.main.port_role_servers[1].moid
+  value = module.main.port_role_servers["1_0_1"]
 }
 
