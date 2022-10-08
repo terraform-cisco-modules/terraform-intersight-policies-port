@@ -36,7 +36,7 @@ module "link_control" {
   organization = "terratest"
 }
 
-module "port" {
+module "main" {
   source       = "../.."
   description  = "${var.name} Port Policy."
   device_model = "UCS-FI-6536"
@@ -124,18 +124,18 @@ output "link_control" {
 }
 
 output "port_channel_ethernet_uplink" {
-  value = module.port.port_channel_ethernet_uplinks[31].moid
+  value = module.main.port_channel_ethernet_uplinks[31].moid
 }
 
 output "port_channel_fc_uplink" {
-  value = module.port.port_channel_fc_uplinks[133].moid
+  value = module.main.port_channel_fc_uplinks[133].moid
 }
 
 output "port_mode" {
-  value = module.port.port_modes[33].moid
+  value = module.main.port_modes[33].moid
 }
 
 output "port_role_server" {
-  value = module.port.port_role_servers[1].moid
+  value = module.main.port_role_servers[1].moid
 }
 
