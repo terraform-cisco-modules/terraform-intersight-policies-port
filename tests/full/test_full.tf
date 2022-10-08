@@ -36,7 +36,7 @@ module "link_control" {
   organization = "terratest"
 }
 
-module "main" {
+module "port" {
   source       = "../.."
   description  = "${var.name} Port Policy."
   device_model = "UCS-FI-6536"
