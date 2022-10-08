@@ -2,9 +2,9 @@ module "port_policy" {
   source  = "terraform-cisco-modules/policies-port/intersight"
   version = ">= 1.0.1"
 
-  description  = "default Port Policy."
+  description  = "default-a Port Policy."
   device_model = "UCS-FI-6536"
-  name         = "default"
+  name         = "default-a"
   organization = "default"
   port_channel_ethernet_uplinks = [
     {
@@ -32,7 +32,8 @@ module "port_policy" {
           port_id          = 1
         }
       ]
-      pc_id = 133
+      pc_id   = 133
+      vsan_id = 100
     }
   ]
   port_modes = [

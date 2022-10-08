@@ -1,9 +1,17 @@
 <!-- BEGIN_TF_DOCS -->
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Developed by: Cisco](https://img.shields.io/badge/Developed%20by-Cisco-blue)](https://developer.cisco.com)
+[![Tests](https://github.com/terraform-cisco-modules/terraform-intersight-policies-port/actions/workflows/terratest.yml/badge.svg)](https://github.com/terraform-cisco-modules/terraform-intersight-policies-port/actions/workflows/terratest.yml)
+
 # Terraform Intersight Policies - Port
 Manages Intersight Port Policies
 
 Location in GUI:
 `Policies` » `Create Policy` » `Port`
+
+## Easy IMM
+
+[*Easy IMM - Comprehensive Example*](https://github.com/terraform-cisco-modules/easy-imm-comprehensive-example) - A comprehensive example for policies, pools, and profiles.
 
 ## Example
 
@@ -13,9 +21,9 @@ module "port_policy" {
   source  = "terraform-cisco-modules/policies-port/intersight"
   version = ">= 1.0.1"
 
-  description  = "default Port Policy."
+  description  = "default-a Port Policy."
   device_model = "UCS-FI-6536"
-  name         = "default"
+  name         = "default-a"
   organization = "default"
   port_channel_ethernet_uplinks = [
     {
@@ -43,7 +51,8 @@ module "port_policy" {
           port_id          = 1
         }
       ]
-      pc_id = 133
+      pc_id   = 133
+      vsan_id = 100
     }
   ]
   port_modes = [
@@ -75,7 +84,7 @@ terraform {
 provider "intersight" {
   apikey    = var.apikey
   endpoint  = var.endpoint
-  secretkey = var.secretkey
+  secretkey = fileexists(var.secretkeyfile) ? file(var.secretkeyfile) : var.secretkey
 }
 ```
 
@@ -94,7 +103,15 @@ variable "endpoint" {
 }
 
 variable "secretkey" {
-  description = "Intersight Secret Key."
+  default     = ""
+  description = "Intersight Secret Key Content."
+  sensitive   = true
+  type        = string
+}
+
+variable "secretkeyfile" {
+  default     = "blah.txt"
+  description = "Intersight Secret Key File Location."
   sensitive   = true
   type        = string
 }
@@ -103,21 +120,14 @@ variable "secretkey" {
 ## Environment Variables
 
 ### Terraform Cloud/Enterprise - Workspace Variables
-- Add variable apikey with value of [your-api-key]
-- Add variable secretkey with value of [your-secret-file-content]
+- Add variable apikey with the value of [your-api-key]
+- Add variable secretkey with the value of [your-secret-file-content]
 
-### Linux
+### Linux and Windows
 ```bash
 export TF_VAR_apikey="<your-api-key>"
-export TF_VAR_secretkey=`cat <secret-key-file-location>`
+export TF_VAR_secretkeyfile="<secret-key-file-location>"
 ```
-
-### Windows
-```bash
-$env:TF_VAR_apikey="<your-api-key>"
-$env:TF_VAR_secretkey="<secret-key-file-location>"
-```
-
 
 ## Requirements
 
@@ -162,6 +172,17 @@ $env:TF_VAR_secretkey="<secret-key-file-location>"
 | Name | Description |
 |------|-------------|
 | <a name="output_moid"></a> [moid](#output\_moid) | UCS Domain Port Policy Managed Object ID (moid). |
+| <a name="output_port_channel_appliances"></a> [port\_channel\_appliances](#output\_port\_channel\_appliances) | Port Policy - Appliance Port-Channels Moid(s). |
+| <a name="output_port_channel_ethernet_uplinks"></a> [port\_channel\_ethernet\_uplinks](#output\_port\_channel\_ethernet\_uplinks) | Port Policy - Ethernet Port-Channel Uplinks Moid(s). |
+| <a name="output_port_channel_fc_uplinks"></a> [port\_channel\_fc\_uplinks](#output\_port\_channel\_fc\_uplinks) | Port Policy - Fibre-Channel Port-Channel Uplinks Moid(s). |
+| <a name="output_port_channel_fcoe_uplinks"></a> [port\_channel\_fcoe\_uplinks](#output\_port\_channel\_fcoe\_uplinks) | Port Policy - FCoE Port-Channel(s) Moid(s). |
+| <a name="output_port_modes"></a> [port\_modes](#output\_port\_modes) | Port Policy - Port Mode Moid(s). |
+| <a name="output_port_role_appliances"></a> [port\_role\_appliances](#output\_port\_role\_appliances) | Port Policy - Port Role Appliance Moid(s). |
+| <a name="output_port_role_ethernet_uplinks"></a> [port\_role\_ethernet\_uplinks](#output\_port\_role\_ethernet\_uplinks) | Port Policy - Port Role Ethernet Uplinks Moid(s). |
+| <a name="output_port_role_fc_storage"></a> [port\_role\_fc\_storage](#output\_port\_role\_fc\_storage) | Port Policy - Port Role Fibre-Channel Storage Moid(s). |
+| <a name="output_port_role_fc_uplinks"></a> [port\_role\_fc\_uplinks](#output\_port\_role\_fc\_uplinks) | Port Policy - Port Role Fibre-Channel Uplink Moid(s). |
+| <a name="output_port_role_fcoe_uplinks"></a> [port\_role\_fcoe\_uplinks](#output\_port\_role\_fcoe\_uplinks) | Port Policy - Port Role FCoE Uplinks Moid(s). |
+| <a name="output_port_role_servers"></a> [port\_role\_servers](#output\_port\_role\_servers) | Port Policy - Port Role Servers Moid(s). |
 ## Resources
 
 | Name | Type |
