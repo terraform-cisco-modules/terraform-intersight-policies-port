@@ -82,7 +82,7 @@ func TestFull(t *testing.T) {
 	"Name":        "{{ .name }}",
 	"Description": "{{ .name }} Port Policy.",
 
-	"DeviceModel": "UCS-FI-6454",
+	"DeviceModel": "UCS-FI-6454"
 }
 `
 	// Validate that what is in the Intersight API matches the expected

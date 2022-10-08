@@ -601,10 +601,11 @@ resource "intersight_fabric_fc_uplink_pc_role" "port_channel_fc_uplinks" {
     intersight_fabric_port_policy.port,
     intersight_fabric_port_mode.port_modes
   ]
-  for_each    = { for v in var.port_channel_fc_uplinks : v.pc_id => v }
-  admin_speed = each.value.admin_speed
-  pc_id       = each.value.pc_id
-  vsan_id     = each.value.vsan_id
+  for_each     = { for v in var.port_channel_fc_uplinks : v.pc_id => v }
+  admin_speed  = each.value.admin_speed
+  fill_pattern = each.value.fill_pattern
+  pc_id        = each.value.pc_id
+  vsan_id      = each.value.vsan_id
   port_policy {
     moid = intersight_fabric_port_policy.port.moid
   }
