@@ -418,17 +418,31 @@ variable "port_role_fcoe_uplinks" {
 variable "port_role_servers" {
   default     = []
   description = <<-EOT
+    * auto_negotation: (default is false) - Auto negotiation configuration for server port. This configuration is required only for FEX Model N9K-C93180YC-FX3 connected with 100G speed port on UCS-FI-6536 and should be set as true.
     * breakout_port_id: (default is 0) - Breakout port Identifier of the Switch Interface.  When a port is not configured as a breakout port, the aggregatePortId is set to 0, and unused.  When a port is configured as a breakout port, the 'aggregatePortId' port number as labeled on the equipment, e.g. the id of the port on the switch.
+    * connected_device_type: (default is Auto) - Device type for which preferred ID to be configured. If the actual connected device does not match the specified device type, the system ignores the 'PreferredDeviceId' property.
+      - Auto - Preferred Id will be ignored if specified with this type.
+      - Chassis - Connected device type is Chassis.
+      - RackServer - Connected device type is Rack Unit Server.
+    * device_number: (defautl is null) - Preferred device ID to be configured by user for the connected device. This ID must be specified together with the 'PreferredDeviceType' property. This ID will only takes effect if the actual connected device matches the 'PreferredDeviceType'. If the preferred ID is not available, the ID is automatically allocated and assigned by the system. If different preferred IDs are specified for the ports connected to the same device, only the preferred ID (if specified) of the port that is discovered first will be considered.
+    * fec: (default is Auto) - Forward error correction configuration for server port. This configuration is required only for FEX Model N9K-C93180YC-FX3 connected with 25G speed ports on UCS-FI-6454/UCS-FI-64108 and should be set as Cl74.
+      - Auto - Forward error correction option 'Auto'.
+      - Cl91 - Forward error correction option 'cl91'.
+      - Cl74 - Forward error correction option 'cl74'.
     * port_list: (required) - Ports to Assign.  Value can be single port `1` or a list of ports `1-10,15-25`.
     * slot_id: (default is 1) - Slot Identifier of the Switch/FEX/Chassis Interface.
     * tags: (optional) - List of Key/Value Pairs to Assign as Attributes to the Policy.
   EOT
   type = list(object(
     {
-      breakout_port_id = optional(number, 0)
-      port_list        = string
-      slot_id          = optional(number, 1)
-      tags             = optional(list(map(string)), [])
+      auto_negotiation      = optional(bool, false)
+      breakout_port_id      = optional(number, 0)
+      connected_device_type = optional(string, "Auto")
+      device_number         = optional(number, null)
+      fec                   = optional(string, "Auto")
+      port_list             = string
+      slot_id               = optional(number, 1)
+      tags                  = optional(list(map(string)), [])
     }
   ))
 }
