@@ -259,7 +259,11 @@ locals {
   */
   port_role_servers_loop_1 = [
     for v in var.port_role_servers : {
-      breakout_port_id = v.breakout_port_id
+      auto_negotiation      = v.auto_negotiation
+      breakout_port_id      = v.breakout_port_id
+      connected_device_type = v.connected_device_type
+      device_number         = v.device_number
+      fec                   = v.fec
       port_list = flatten(
         [for s in compact(length(regexall("-", v.port_list)) > 0 ? tolist(split(",", v.port_list)
           ) : length(regexall(",", v.port_list)) > 0 ? tolist(split(",", v.port_list)) : [v.port_list]
@@ -275,10 +279,15 @@ locals {
   port_role_servers_loop_2 = flatten([
     for v in local.port_role_servers_loop_1 : [
       for s in v.port_list : {
-        breakout_port_id = v.breakout_port_id
-        port_id          = s
-        slot_id          = v.slot_id
-        tags             = v.tags
+        auto_negotiation      = v.auto_negotiation
+        breakout_port_id      = v.breakout_port_id
+        connected_device_type = v.connected_device_type
+        device_number         = v.device_number
+        fec                   = v.fec
+        breakout_port_id      = v.breakout_port_id
+        port_id               = s
+        slot_id               = v.slot_id
+        tags                  = v.tags
       }
     ]
   ])
@@ -459,7 +468,7 @@ resource "intersight_fabric_appliance_pc_role" "port_channel_appliances" {
   depends_on = [
     intersight_fabric_port_policy.port
   ]
-  for_each    = { for v in var.port_channel_appliances : v.pc_id => v }
+  for_each    = { for v in var.port_channel_appliances : "${var.name}-${v.pc_id}" => v }
   admin_speed = each.value.admin_speed
   # aggregate_port_id = each.value.breakout_port_id
   mode     = each.value.mode
@@ -928,10 +937,14 @@ resource "intersight_fabric_server_role" "port_role_servers" {
   depends_on = [
     intersight_fabric_port_policy.port
   ]
-  for_each          = local.port_role_servers
-  aggregate_port_id = each.value.breakout_port_id
-  port_id           = each.value.port_id
-  slot_id           = each.value.slot_id
+  for_each                  = local.port_role_servers
+  auto_negotiation_disabled = each.value.auto_negotiation
+  aggregate_port_id         = each.value.breakout_port_id
+  fec                       = each.value.fec
+  port_id                   = each.value.port_id
+  preferred_device_id       = each.value.device_number
+  preferred_device_type     = each.value.connected_device_type
+  slot_id                   = each.value.slot_id
   port_policy {
     moid = intersight_fabric_port_policy.port.moid
   }
