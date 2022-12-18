@@ -151,8 +151,8 @@ variable "port_channel_fc_uplinks" {
       - 16Gbps - Admin configurable speed 16Gbps.
       - 32Gbps: (default) - Admin configurable speed 32Gbps.
     * fill_pattern: (optional) - Fill pattern to differentiate the configs in NPIV.
-      - Arbff: (default) - Fc Fill Pattern type Arbff.
-      - Idle - Fc Fill Pattern type Idle.
+      - Arbff: - Fc Fill Pattern type Arbff.  Only use for 8G Fibre-Channel
+      - Idle (default) - Fc Fill Pattern type Idle.
     * interfaces: (optional) - list of interfaces {breakout_port_id/port_id/slot_id} to assign to the Port-Channel Policy.
       - breakout_port_id: (default is 0) - Breakout port Identifier of the Switch Interface.  When a port is not configured as a breakout port, the aggregatePortId is set to 0, and unused.  When a port is configured as a breakout port, the 'aggregatePortId' port number as labeled on the equipment, e.g. the id of the port on the switch.
       - port_id: (required) - Port ID to Assign to the LAN Port-Channel Policy.
@@ -164,7 +164,7 @@ variable "port_channel_fc_uplinks" {
   type = list(object(
     {
       admin_speed  = optional(string, "32Gbps")
-      fill_pattern = optional(string, "Arbff")
+      fill_pattern = optional(string, "Idle")
       interfaces = optional(list(object(
         {
           breakout_port_id = optional(number, 0)
@@ -361,8 +361,8 @@ variable "port_role_fc_uplinks" {
       - 32Gbps: (default) - Admin configurable speed 32Gbps.
     * breakout_port_id: (default is 0) - Breakout port Identifier of the Switch Interface.  When a port is not configured as a breakout port, the aggregatePortId is set to 0, and unused.  When a port is configured as a breakout port, the 'aggregatePortId' port number as labeled on the equipment, e.g. the id of the port on the switch.
     * fill_pattern: (optional) - Fill pattern to differentiate the configs in NPIV.
-      - Arbff: (default) - Fc Fill Pattern type Arbff.
-      - Idle - Fc Fill Pattern type Idle.
+      - Arbff: - Fc Fill Pattern type Arbff.  Only use for 8G Fibre-Channel
+      - Idle (default) - Fc Fill Pattern type Idle.
     * port_list: (required) - Ports to Assign.  Value can be single port `1` or a list of ports `1-10,15-25`.
     * slot_id: (default is 1) - Slot Identifier of the Switch/FEX/Chassis Interface.
     * tags: (optional) - List of Key/Value Pairs to Assign as Attributes to the Policy.
@@ -372,7 +372,7 @@ variable "port_role_fc_uplinks" {
     {
       admin_speed      = optional(string, "32Gbps")
       breakout_port_id = optional(number, 0)
-      fill_pattern     = optional(string, "Arbff")
+      fill_pattern     = optional(string, "Idle")
       port_list        = string
       slot_id          = optional(number, 1)
       tags             = optional(list(map(string)), [])
